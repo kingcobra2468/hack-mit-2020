@@ -1,20 +1,13 @@
-// var name; 
-// var connectedUser;
-// var localVideo = document.querySelector('#localVideo'); 
-
-// navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(function(mediaStream) {
-//     localVideo.srcObject = mediaStream;
-//     localVideo.onloadedmetadata = function(e) {
-//         localVideo.play();
-//     };   
-// })
 const peerConnections = {};
-const configuration = {
+var localPeerConnection;
+
+const config = {
     "iceServers": [{ "url": "stun:stun2.1.google.com:19302" }]
 };
 
 var socket = io('ws://localhost:4001');
 const video = document.getElementById('localVideo')
+const videoR = document.getElementById('remoteVideo')
 
 function startVideo() {
     navigator.mediaDevices.getUserMedia(
@@ -27,32 +20,45 @@ function startVideo() {
 }
 
 socket.on("watcher", id => {
-
-    const peerConnection = new RTCPeerConnection(config);
+    
+    console.log('recieve watcher from ', id)
+    peerConnection = new RTCPeerConnection(config);
     peerConnections[id] = peerConnection;
 
     let stream = video.srcObject;
-    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+    stream.getTracks().forEach(track => peerConnections[id].addTrack(track, stream));
 
-    peerConnection.onicecandidate = event => {
+    peerConnections[id].onicecandidate = event => {
         if (event.candidate) {
             socket.emit("candidate", id, event.candidate);
         }
     };
 
-    peerConnection
+    peerConnections[id].ontrack = event => {
+        videoR.srcObject = event.streams[0];
+    };
+
+    peerConnections[id]
         .createOffer()
-        .then(sdp => peerConnection.setLocalDescription(sdp))
+        .then(sdp => peerConnections[id].setLocalDescription(sdp))
         .then(() => {
-            socket.emit("offer", id, peerConnection.localDescription);
+            socket.emit("offer", id, peerConnections[id].localDescription);
         });
 });
 
 socket.on("answer", (id, description) => {
-    peerConnections[id].setRemoteDescription(description);
+    console.log('recieve answer from ', id)
+    peerConnections[id].setRemoteDescription(description); 
 });
 
 socket.on("candidate", (id, candidate) => {
+    
+    console.log('recieve candidate from ', id)
+    
+    peerConnections[id]
+        .addIceCandidate(new RTCIceCandidate(candidate))
+        .catch(e => console.error(e))
+
     peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
 });
 
@@ -61,41 +67,43 @@ socket.on("disconnectPeer", id => {
     delete peerConnections[id];
 });
 
+socket.on('test', ids => {
+    console.log(ids)
+})
+
 socket.on("offer", (id, description) => {
+    console.log('recieve offer from ', id)
+
     peerConnection = new RTCPeerConnection(config);
-    peerConnection
+    peerConnections[id] = peerConnection
+    
+    let stream = video.srcObject;
+    stream.getTracks().forEach(track => peerConnections[id].addTrack(track, stream));
+
+    peerConnections[id]
         .setRemoteDescription(description)
-        .then(() => peerConnection.createAnswer())
-        .then(sdp => peerConnection.setLocalDescription(sdp))
+        .then(() => peerConnections[id].createAnswer())
+        .then(sdp => peerConnections[id].setLocalDescription(sdp))
         .then(() => {
-            socket.emit("answer", id, peerConnection.localDescription);
+            socket.emit("answer", id, peerConnections[id].localDescription);
         });
-    peerConnection.ontrack = event => {
-        video.srcObject = event.streams[0];
+        peerConnections[id].ontrack = event => {
+        videoR.srcObject = event.streams[0];
     };
-    peerConnection.onicecandidate = event => {
+    peerConnections[id].onicecandidate = event => {
         if (event.candidate) {
             socket.emit("candidate", id, event.candidate);
         }
     };
 });
 
-socket.on("candidate", (id, candidate) => {
-    peerConnection
-        .addIceCandidate(new RTCIceCandidate(candidate))
-        .catch(e => console.error(e));
-});
-
 socket.on("connect", () => {
-    socket.emit("watcher");
+    socket.emit("watcher", socket.id);
 });
 
 socket.on("broadcaster", (id) => {
+    console.log("broadcast from ", id)
     socket.emit("watcher", id);
-});
-
-socket.on("disconnectPeer", () => {
-    peerConnection.close();
 });
 
 window.onunload = window.onbeforeunload = () => {
@@ -128,4 +136,3 @@ video.addEventListener('play', () => {
         faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
     }, 100)
 })
-

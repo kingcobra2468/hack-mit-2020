@@ -6,28 +6,31 @@ const {socket_controller} = require('./sockets/webrtc_socket')
 const port = 4001;
 
 const http = require("http");
-const server = http.createServer(app);
+const server = http.Server(app);
 
 const io = require("socket.io")(server, {
     origins:["127.0.0.1:8000"],
-    path: '/',
-    serveClient: false,
-    // below are engine.IO options
+    serveClient: true,
     pingInterval: 20000,
     pingTimeout: 5000,
     cookie: false
 });
 
+// Routes
+const witty_lingo = require('./controllers/witty_lingo')(io)
+
+app.use('/', witty_lingo);
 app.use(express.static("/public"));
 app.use(cors());
 
-app.all('/', function(req, res, next) {
+/*app.all('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    console.log(res.path)
     next();
-});
+});*/
 
 io.sockets.on('connection', socket => socket_controller(socket))
-
 io.sockets.on("error", e => console.log(e));
+
 server.listen(port, () => console.log(`Server is running on port ${port}`));
