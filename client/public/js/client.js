@@ -17,14 +17,13 @@ var socket = io('ws://localhost:4001');
 const video = document.getElementById('localVideo')
 
 function startVideo() {
-    navigator.getUserMedia(
-        { video: {} },
+    navigator.mediaDevices.getUserMedia(
+        { video: {} }).then(
         stream => {
             video.srcObject = stream;
             socket.emit("broadcaster");
-        },
-        err => console.error(err)
-    )
+        }).catch(
+        err => console.error(err))
 }
 
 socket.on("watcher", id => {

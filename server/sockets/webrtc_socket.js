@@ -11,7 +11,7 @@ module.exports.socket_controller = function (socket) {
         socket.to(id).emit("watcher", socket.id);
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", (id) => {
         socket.to(broadcaster).emit("disconnectPeer", socket.id);
     });
 

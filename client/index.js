@@ -4,11 +4,12 @@ const express = require('express')
 // const multer = require('multer');
 // const helmet = require("helmet");
 const io = require("socket.io-client");
-
+const cors = require('cors');
 
 // Routes
 
 const app = express()
+app.use(cors());
 //app.locals.user_tracker = user_tracker
 
 app.set('view engine', 'pug')
