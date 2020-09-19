@@ -1,0 +1,47 @@
+head
+  title WebRTC Video Demo
+  link(rel='stylesheet' href='node_modules/bootstrap/dist/css/bootstrap.min.css')
+style.
+  body {
+  background: #eee;
+  padding: 5% 0;
+  }
+  video {
+  background: black;
+  border: 1px solid gray;
+  }
+  .call-page {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 500px;
+  height: 500px;
+  }
+  #localVideo {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  }
+  #remoteVideo {
+  width: 500px;
+  height: 500px;
+  }
+#loginPage.container.text-center
+  .row
+    .col-md-4.col-md-offset-4
+      h2 WebRTC Video Demo. Please sign in
+      label.sr-only(for='usernameInput') Login
+      input#usernameInput(type='email' c='' lass='form-control formgroup' placeholder='Login' required='' autofocus='')
+      button#loginBtn.btn.btn-lg.btn-primary.btnblock
+        | Sign in
+#callPage.call-page
+  video#localVideo(autoplay='')
+  video#remoteVideo(autoplay='')
+  .row.text-center
+    .col-md-12
+      input#callToUsernameInput(type='text' placeholder='username to call')
+      button#callBtn.btn-success.btn Call
+      button#hangUpBtn.btn-danger.btn Hang Up
+script(src='/static/js/client.js', type="text/javascript")
