@@ -67,10 +67,6 @@ socket.on("disconnectPeer", id => {
     delete peerConnections[id];
 });
 
-socket.on('test', ids => {
-    console.log(ids)
-})
-
 socket.on("offer", (id, description) => {
     console.log('recieve offer from ', id)
 
@@ -105,6 +101,10 @@ socket.on("broadcaster", (id) => {
     console.log("broadcast from ", id)
     socket.emit("watcher", id);
 });
+
+socket.on('word_bindings', ids => {
+    console.log(ids)
+})
 
 window.onunload = window.onbeforeunload = () => {
     socket.close();
