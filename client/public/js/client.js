@@ -11,7 +11,8 @@ const videoR = document.getElementById('remoteVideo')
 
 function startVideo() {
     navigator.mediaDevices.getUserMedia(
-        { video: {} }).then(
+        { video: {}, audio: true,
+        video: true }).then(
         stream => {
             video.srcObject = stream;
             socket.emit("broadcaster");
