@@ -23,11 +23,11 @@ Launched by one member of the teach, this portal allows you to see various statu
 
 
 <h5> How to Run and Instasll </h5>
-1. Install node
-2. Install packages using `npm install`
-3. start both node istances
-4. For establishing connections from outside local network, I recommend ngrok to proxy the server/index.js. Then put that url into the `Server URI` input from client and click connect
+<p>1. Install node</p>
+<p>2. Install packages using `npm install`</p>
+<p>3. start both node istances</p>
+<p>4. For establishing connections from outside local network, I recommend ngrok to proxy the server/index.js. Then put that url into the `Server URI` input from client and click connect</p>
 
 <h5> Sources </h5>
-1. https://gabrieltanner.org/blog/webrtc-video-broadcast (for figuring out WebRTC protocol)
-2. https://github.com/justadudewhohacks/face-api.js/ (for client based computer vision for text attachment to forehead)
+<p>1. https://gabrieltanner.org/blog/webrtc-video-broadcast (for figuring out WebRTC protocol)</p>
+<p>2. https://github.com/justadudewhohacks/face-api.js/ (for client based computer vision for text attachment to forehead)</p>
