@@ -26,11 +26,21 @@ video {
     height: 50vh !important;
     background-color: var(--secondary);
 }
+
+.person{
+    position: relative;
+}
     
 canvas {
     position: absolute;
     top: 0;
     left: 0;
+    border: none;
+    /* float: left; */
+
+    /* width: 100%; */
+    /* min-width: 100%; */
+    /* height: 50vh !important; */
 }
 
 .row > div {

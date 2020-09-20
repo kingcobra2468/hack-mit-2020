@@ -166,21 +166,27 @@ const text = [
   const anchor = { x: 200, y: 200 }
   // see DrawTextField below
   const drawOptions = {
-    anchorPosition: 'TOP_CENTER',
+    anchorPosition: 'TOP_RIGHT',
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
   }
 //   const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
 //   drawBox.draw(document.getElementById('myCanvas'))
 
 function updateFaceData(inputVideo){
-    const canvas = faceapi.createCanvasFromMedia(inputVideo)
-    inputVideo.parentNode.appendChild(canvas);
-    // document.body.append(canvas)
+    // const canvas = faceapi.createCanvasFromMedia(inputVideo)
+    const canvas = inputVideo.nextElementSibling;
     
-    const displaySize = { width: inputVideo.videoWidth, height: inputVideo.videoHeight }
+    // if (inputVideo == )
+    // canvas.setAttribute("style", `margin-left:${inputVideo.offsetWidth}`);
+    // inputVideo.parentNode.appendChild(canvas);
+    // document.body.append(canvas)
+    console.log(canvas)
+    
+    const displaySize = { width: inputVideo.offsetWidth, height: inputVideo.offsetHeight }
     faceapi.matchDimensions(canvas, displaySize)
     setInterval(async () => {
         const detections = await faceapi.detectSingleFace(inputVideo, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
+        
         // console.log(detections)
         if (detections != undefined){
             const resizedDetections = faceapi.resizeResults(detections, displaySize)
@@ -190,7 +196,7 @@ function updateFaceData(inputVideo){
             // console.log(nose)
             for (var i = 0; i < 5; i++){
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-                anchor["x"] = (leftEyeBrow[i]["x"] + rightEyeBrow[i]["x"]) / 2;
+                anchor["x"] = rightEyeBrow[i]["x"];
                 anchor["y"]= 1 * (leftEyeBrow[i]["y"] - nose[i]["y"]) + leftEyeBrow[i]["y"];
                 const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
                 drawBox.draw(canvas)
@@ -199,14 +205,23 @@ function updateFaceData(inputVideo){
             // faceapi.draw.drawDetections(canvas, resizedDetections)
             // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
         }
-        else{
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-            anchor["x"] = 15
-            anchor["y"] = 15
-            const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
-            drawBox.draw(canvas)
+        // else{
+        //     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+        //     anchor["x"] = 15
+        //     anchor["y"] = 15
+        //     const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
+        //     drawBox.draw(canvas)
 
-        }
+        // }
 
     }, 83)
 }
+
+// window.onresize = updateCanvases;
+
+// function updateCanvases(){
+//     remoteVideo1.setAttribute("style", `margin-left:${localVideo.offsetWidth}`);
+//     remoteVideo2.setAttribute("style", `margin-top:${localVideo.offsetHeight}`);
+//     remoteVideo3.setAttribute("style", `margin-left:${remoteVideo2.offsetWidth}`);
+//     remoteVideo3.setAttribute("style", `margin-left:${remoteVideo2.offsetWidth}`);
+// }
