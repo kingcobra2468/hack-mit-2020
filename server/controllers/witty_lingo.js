@@ -14,7 +14,7 @@ module.exports = function(io) {
         let word_bindings = {};
         
         ids.forEach((id, i) => word_bindings[id] = words[i])
-
+        console.log(word_bindings)
         io.sockets.emit('new-witty-lingo-game', word_bindings)
 
         res.json(word_bindings)

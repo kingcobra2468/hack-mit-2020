@@ -1,5 +1,6 @@
 const peerConnections = {}; // socket id to socket object
 var localPeerConnection;
+var witty_lingo_words = []
 
 const video = document.getElementById('localVideo')
 const videoR1 = document.getElementById('remoteVideo1')
@@ -10,23 +11,29 @@ video.muted = true;
 
 var videoList = [video, videoR1, videoR2, videoR3]
 const slots = {} // id to videoList index
-var currentIndex = 0
+const videoIds = {}
+var currentIndex = 0 //TODO: Handle 
 
 const config = {
     "iceServers": [{ "url": "stun:stun2.1.google.com:19302" }]
 };
 
-function addStreamToPage(stream, id){
+function addStreamToPage(stream, id) {
+
+    console.log('id ', id)
     //Determine if id is already in the page
     //if it is rewrite
     //if it is not, add to new slot 
-    if (!(id in slots)){
+    if (!(id in slots)) {
         slots[id] = getFirstFreeSlot()
     }
     videoList[slots[id]].srcObject = stream;
+    videoIds[videoList[slots[id]].id] = id
+
+    console.log(videoIds)
 }
 
-function getFirstFreeSlot(){
+function getFirstFreeSlot() {
     currentIndex += 1
     return currentIndex
 }
@@ -35,20 +42,23 @@ var socket = io('https://33c755acbc30.ngrok.io') //io('ws://localhost:4001');
 
 function startVideo() {
     navigator.mediaDevices.getUserMedia(
-        { video: { frameRate: { ideal: 12, max: 12 },
-        width: { min: 640, ideal: 640, max: 640 },
-        height: { min: 480, ideal: 480, max: 480 } 
-    }, audio: true,
-        video: true }).then(
-        stream => {
-            video.srcObject = stream; // local feed
-            socket.emit("broadcaster");
-        }).catch(
-        err => console.error(err))
+        {
+            video: {
+                frameRate: { ideal: 12, max: 12 },
+                width: { min: 640, ideal: 640, max: 640 },
+                height: { min: 480, ideal: 480, max: 480 }
+            }, audio: true,
+            video: true
+        }).then(
+            stream => {
+                video.srcObject = stream; // local feed
+                socket.emit("broadcaster");
+            }).catch(
+                err => console.error(err))
 }
 
 socket.on("watcher", id => { //
-    
+
     console.log('recieve watcher from ', id)
     peerConnection = new RTCPeerConnection(config);
     peerConnections[id] = peerConnection;
@@ -77,13 +87,13 @@ socket.on("watcher", id => { //
 
 socket.on("answer", (id, description) => {
     console.log('recieve answer from ', id)
-    peerConnections[id].setRemoteDescription(description); 
+    peerConnections[id].setRemoteDescription(description);
 });
 
 socket.on("candidate", (id, candidate) => {
-    
+
     console.log('recieve candidate from ', id)
-    
+
     peerConnections[id]
         .addIceCandidate(new RTCIceCandidate(candidate))
         .catch(e => console.error(e))
@@ -102,7 +112,7 @@ socket.on("offer", (id, description) => { //
 
     peerConnection = new RTCPeerConnection(config);
     peerConnections[id] = peerConnection
-    
+
     let stream = video.srcObject;
     stream.getTracks().forEach(track => peerConnections[id].addTrack(track, stream));
 
@@ -113,7 +123,7 @@ socket.on("offer", (id, description) => { //
         .then(() => {
             socket.emit("answer", id, peerConnections[id].localDescription);
         });
-        peerConnections[id].ontrack = event => {
+    peerConnections[id].ontrack = event => {
         addStreamToPage(event.streams[0], id);
         // videoR.srcObject = event.streams[0];
     };
@@ -134,8 +144,8 @@ socket.on("broadcaster", (id) => {
     socket.emit("watcher", id);
 });
 
-socket.on('word_bindings', ids => {
-    console.log(ids)
+socket.on('new-witty-lingo-game', ids => {
+    witty_lingo_words = ids
 })
 
 window.onunload = window.onbeforeunload = () => {
@@ -155,73 +165,49 @@ Promise.all([
     // faceapi.nets.faceExpressionNet.loadFromUri('/static/models')
 ]).then(startVideo)
 
-video.addEventListener('play', function() { updateFaceData(video); })
-videoR1.addEventListener('play', function() { updateFaceData(videoR1); })
-videoR2.addEventListener('play', function() { updateFaceData(videoR2); })
-videoR3.addEventListener('play', function() { updateFaceData(videoR3); })
+video.addEventListener('play', function () { updateFaceData(video); })
+videoR1.addEventListener('play', function () { updateFaceData(videoR1); })
+videoR2.addEventListener('play', function () { updateFaceData(videoR2); })
+videoR3.addEventListener('play', function () { updateFaceData(videoR3); })
 
-const text = [
-    'Hasta Luego'
-  ]
-  const anchor = { x: 200, y: 200 }
-  // see DrawTextField below
-  const drawOptions = {
+const anchor = { x: 200, y: 200 }
+// see DrawTextField below
+const drawOptions = {
     anchorPosition: 'TOP_RIGHT',
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  }
+}
 //   const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
 //   drawBox.draw(document.getElementById('myCanvas'))
 
-function updateFaceData(inputVideo){
-    // const canvas = faceapi.createCanvasFromMedia(inputVideo)
+function updateFaceData(inputVideo) {
+
     const canvas = inputVideo.nextElementSibling;
-    
-    // if (inputVideo == )
-    // canvas.setAttribute("style", `margin-left:${inputVideo.offsetWidth}`);
-    // inputVideo.parentNode.appendChild(canvas);
-    // document.body.append(canvas)
-    console.log(canvas)
-    
+
     const displaySize = { width: inputVideo.offsetWidth, height: inputVideo.offsetHeight }
     faceapi.matchDimensions(canvas, displaySize)
     setInterval(async () => {
+
         const detections = await faceapi.detectSingleFace(inputVideo, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
-        
-        // console.log(detections)
-        if (detections != undefined){
+
+        let text = ''
+
+        if (witty_lingo_words[videoIds[inputVideo.id]] !== undefined)
+            text = witty_lingo_words[videoIds[inputVideo.id]]
+
+        if (detections != undefined) {
+
             const resizedDetections = faceapi.resizeResults(detections, displaySize)
             const leftEyeBrow = resizedDetections.landmarks.getLeftEyeBrow()
             const rightEyeBrow = resizedDetections.landmarks.getRightEyeBrow()
             const nose = resizedDetections.landmarks.getNose()
-            // console.log(nose)
-            for (var i = 0; i < 5; i++){
+            for (var i = 0; i < 5; i++) {
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
                 anchor["x"] = rightEyeBrow[i]["x"];
-                anchor["y"]= 1 * (leftEyeBrow[i]["y"] - nose[i]["y"]) + leftEyeBrow[i]["y"];
-                const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
+                anchor["y"] = 1 * (leftEyeBrow[i]["y"] - nose[i]["y"]) + leftEyeBrow[i]["y"];
+                const drawBox = new faceapi.draw.DrawTextField([text], anchor, drawOptions)
                 drawBox.draw(canvas)
-            } 
-            
-            // faceapi.draw.drawDetections(canvas, resizedDetections)
-            // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+            }
+
         }
-        // else{
-        //     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-        //     anchor["x"] = 15
-        //     anchor["y"] = 15
-        //     const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
-        //     drawBox.draw(canvas)
-
-        // }
-
     }, 83)
 }
-
-// window.onresize = updateCanvases;
-
-// function updateCanvases(){
-//     remoteVideo1.setAttribute("style", `margin-left:${localVideo.offsetWidth}`);
-//     remoteVideo2.setAttribute("style", `margin-top:${localVideo.offsetHeight}`);
-//     remoteVideo3.setAttribute("style", `margin-left:${remoteVideo2.offsetWidth}`);
-//     remoteVideo3.setAttribute("style", `margin-left:${remoteVideo2.offsetWidth}`);
-// }
