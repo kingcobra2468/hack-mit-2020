@@ -26,7 +26,8 @@ app.set('view engine', 'pug')
 app.use('/static/', express.static('public'));  
 
 app.get('/', function(req, res) { // home page
-    res.render('index');
+    res.sendFile("index.html", { root: __dirname })
+    // res.render('index');
 })
 
 app.listen(8000)

@@ -1,0 +1,21 @@
+body {
+    margin: 0px;
+    background: #00CED1;
+}
+
+
+
+.video-mask{
+    width: 50%;
+    height: 50%;
+    /* border-radius: 30px;  */
+    /* margin: 10px; */
+    /* display: flex; */
+}
+
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}

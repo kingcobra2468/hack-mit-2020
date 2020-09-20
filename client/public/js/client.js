@@ -1,26 +1,50 @@
-const peerConnections = {};
+const peerConnections = {}; // socket id to socket object
 var localPeerConnection;
+
+const video = document.getElementById('localVideo')
+const videoR1 = document.getElementById('remoteVideo1')
+const videoR2 = document.getElementById('remoteVideo2')
+const videoR3 = document.getElementById('remoteVideo3')
+
+video.muted = true;
+
+var videoList = [video, videoR1, videoR2, videoR3]
+const slots = {} // id to videoList index
+var currentIndex = 0
 
 const config = {
     "iceServers": [{ "url": "stun:stun2.1.google.com:19302" }]
 };
 
-var socket = io('ws://localhost:4001');
-const video = document.getElementById('localVideo')
-const videoR = document.getElementById('remoteVideo')
+function addStreamToPage(stream, id){
+    //Determine if id is already in the page
+    //if it is rewrite
+    //if it is not, add to new slot 
+    if (!(id in slots)){
+        slots[id] = getFirstFreeSlot()
+    }
+    videoList[slots[id]].srcObject = stream;
+}
+
+function getFirstFreeSlot(){
+    currentIndex += 1
+    return currentIndex
+}
+
+var socket = io('https://4af90ae35339.ngrok.io/') //io('ws://localhost:4001');
 
 function startVideo() {
     navigator.mediaDevices.getUserMedia(
-        { video: {}, audio: true,
+        { video: { frameRate: { ideal: 12, max: 12 }}, audio: true,
         video: true }).then(
         stream => {
-            video.srcObject = stream;
+            video.srcObject = stream; // local feed
             socket.emit("broadcaster");
         }).catch(
         err => console.error(err))
 }
 
-socket.on("watcher", id => {
+socket.on("watcher", id => { //
     
     console.log('recieve watcher from ', id)
     peerConnection = new RTCPeerConnection(config);
@@ -36,7 +60,8 @@ socket.on("watcher", id => {
     };
 
     peerConnections[id].ontrack = event => {
-        videoR.srcObject = event.streams[0];
+        addStreamToPage(event.streams[0], id);
+        // videoR.srcObject = event.streams[0]; // connecting to remote streams 
     };
 
     peerConnections[id]
@@ -64,11 +89,12 @@ socket.on("candidate", (id, candidate) => {
 });
 
 socket.on("disconnectPeer", id => {
+    console.log("Disconnected peer with id: ", id);
     peerConnections[id].close();
     delete peerConnections[id];
 });
 
-socket.on("offer", (id, description) => {
+socket.on("offer", (id, description) => { //
     console.log('recieve offer from ', id)
 
     peerConnection = new RTCPeerConnection(config);
@@ -85,7 +111,8 @@ socket.on("offer", (id, description) => {
             socket.emit("answer", id, peerConnections[id].localDescription);
         });
         peerConnections[id].ontrack = event => {
-        videoR.srcObject = event.streams[0];
+        addStreamToPage(event.streams[0], id);
+        // videoR.srcObject = event.streams[0];
     };
     peerConnections[id].onicecandidate = event => {
         if (event.candidate) {
@@ -95,6 +122,7 @@ socket.on("offer", (id, description) => {
 });
 
 socket.on("connect", () => {
+    console.log("Connected to webRTC");
     socket.emit("watcher", socket.id);
 });
 
@@ -116,24 +144,34 @@ window.onunload = window.onbeforeunload = () => {
     socket.close();
 };
 
+// startVideo();
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/static/models'),
     faceapi.nets.faceLandmark68Net.loadFromUri('/static/models'),
     faceapi.nets.faceRecognitionNet.loadFromUri('/static/models'),
-    faceapi.nets.faceExpressionNet.loadFromUri('/static/models')
+    // faceapi.nets.faceExpressionNet.loadFromUri('/static/models')
 ]).then(startVideo)
 
-video.addEventListener('play', () => {
-    const canvas = faceapi.createCanvasFromMedia(video)
-    document.body.append(canvas)
-    const displaySize = { width: video.videoWidth, height: video.videoHeight }
+video.addEventListener('play', function() { updateFaceData(video); })
+videoR1.addEventListener('play', function() { updateFaceData(videoR1); })
+videoR2.addEventListener('play', function() { updateFaceData(videoR2); })
+videoR3.addEventListener('play', function() { updateFaceData(videoR3); })
+
+function updateFaceData(inputVideo){
+    console.log(inputVideo)
+    const canvas = faceapi.createCanvasFromMedia(inputVideo)
+    inputVideo.parentNode.appendChild(canvas);
+    // document.body.append(canvas)
+    
+    const displaySize = { width: inputVideo.videoWidth, height: inputVideo.videoHeight }
     faceapi.matchDimensions(canvas, displaySize)
     setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+        const detections = await faceapi.detectSingleFace(inputVideo, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
+        
         const resizedDetections = faceapi.resizeResults(detections, displaySize)
+
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
         faceapi.draw.drawDetections(canvas, resizedDetections)
         faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-        faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-    }, 100)
-})
+    }, 83)
+}
