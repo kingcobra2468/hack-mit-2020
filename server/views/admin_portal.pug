@@ -1,0 +1,28 @@
+html
+    head
+        script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js')
+        script(src='/static/js/admin_portal.js', type="text/javascript")
+
+        link(href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css', rel='stylesheet')
+        link(href="https://fonts.googleapis.com/css2?family=Antic+Slab&display=swap", rel="stylesheet")
+        link(href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap", rel="stylesheet")
+        link(href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap", rel="stylesheet")
+        link(href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300&display=swap", rel="stylesheet")
+        link(href='/static/css/admin_portal.css', rel='stylesheet')
+        title Witty Lingo Admin Portal 
+    body
+        div.container.px-5.mt-5#setting-background
+            div.pl-5
+                div.setting-text
+                    h1.pt-5.font-weight-bold Settings
+                div.settings-item.mt-5
+                    h5 Port : #{server_port}
+                div.settings-item
+                    h5 # of Players : 
+                        span#num-of-players 0
+                div.settings-item
+                    h5 Players
+                    textarea#players(name="ids", rows="4", readonly)
+                button.btn.mt-5#new-game-btn(type='button') New Game

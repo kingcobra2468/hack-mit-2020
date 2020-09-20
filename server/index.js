@@ -11,7 +11,7 @@ const http = require("http");
 const server = http.Server(app);
 
 const io = require("socket.io")(server, {
-    origins:["127.0.0.1:8000"],
+    origins:["*:8000"], //127.0.0.1
     serveClient: true,
     pingInterval: 20000,
     pingTimeout: 5000,
@@ -20,9 +20,13 @@ const io = require("socket.io")(server, {
 
 // Routes
 const witty_lingo = require('./controllers/witty_lingo')(io)
+const portal = require('./controllers/admin_portal')
 
-app.use('/', witty_lingo);
-app.use(express.static("/public"));
+app.set('view engine', 'pug')
+
+app.use('/api', witty_lingo);
+app.use('/', portal)
+app.use('/static/', express.static('public'));  
 app.use(cors());
 
 /*app.all('/', function(req, res, next) {

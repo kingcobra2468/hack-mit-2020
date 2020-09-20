@@ -1,0 +1,43 @@
+:root {
+    --background : #e4eaec; 
+    --primary: #ffffff;
+    --secondary: #526069;
+    --ternary: #4ad4f0;
+    --text-color: #1b1c25;
+}
+
+body {
+    background: var(--background) !important;
+}
+
+#setting-background {
+    background-color: var(--primary) !important;
+    height: 70%;
+}
+
+#new-game-btn {
+    background-color: var(--ternary);
+    width: 15%;
+}
+
+.settings-body {
+    background-color: var(--secondary) !important;
+    height: 80%;
+}
+.setting-text {
+    border-bottom: 2px solid black;
+}
+.settings-item {
+    background-color: var(--background);
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin-top: 10px;
+    padding-left: 10px;
+    vertical-align:middle
+}
+
+#players {
+    width: 95%;
+    height: 9%;
+    resize: none;
+}
