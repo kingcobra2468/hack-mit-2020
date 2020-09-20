@@ -36,7 +36,9 @@ var socket = io('https://33c755acbc30.ngrok.io') //io('ws://localhost:4001');
 function startVideo() {
     navigator.mediaDevices.getUserMedia(
         { video: { frameRate: { ideal: 12, max: 12 },
-        width: { min: 640, ideal: 640, max: 640 }, height: { min: 480, ideal: 480, max: 480 }}, audio: true,
+        width: { min: 640, ideal: 640, max: 640 },
+        height: { min: 480, ideal: 480, max: 480 } 
+    }, audio: true,
         video: true }).then(
         stream => {
             video.srcObject = stream; // local feed

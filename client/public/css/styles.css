@@ -1,21 +1,42 @@
-body {
-    margin: 0px;
-    background: #00CED1;
+:root {
+    --background : #292651; 
+    --primary: #2E4770;
+    --secondary: #526069;
+    --ternary: #CE5E82;
+    --text-color: #1b1c25;
 }
 
 
+html, body { height: 100vh; padding: 0; margin: 0; 
+    background: var(--background) !important;}
 
 .video-mask{
     width: 50%;
-    height: 50%;
+    
     /* border-radius: 30px;  */
     /* margin: 10px; */
     /* display: flex; */
 }
 
-
+video {
+    object-fit: fill;
+    object-position: 50% 50%;
+    width: 100%;
+    min-width: 100%;
+    height: 50vh !important;
+    background-color: var(--secondary);
+}
+    
 canvas {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.row > div {
+    height: 100%;
+}
+
+div {
+    flex: 1 0 auto;
 }
