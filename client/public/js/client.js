@@ -31,11 +31,12 @@ function getFirstFreeSlot(){
     return currentIndex
 }
 
-var socket = io('https://4af90ae35339.ngrok.io/') //io('ws://localhost:4001');
+var socket = io('https://33c755acbc30.ngrok.io') //io('ws://localhost:4001');
 
 function startVideo() {
     navigator.mediaDevices.getUserMedia(
-        { video: { frameRate: { ideal: 12, max: 12 }}, audio: true,
+        { video: { frameRate: { ideal: 12, max: 12 },
+        width: { min: 640, ideal: 640, max: 640 }, height: { min: 480, ideal: 480, max: 480 }}, audio: true,
         video: true }).then(
         stream => {
             video.srcObject = stream; // local feed
@@ -157,8 +158,19 @@ videoR1.addEventListener('play', function() { updateFaceData(videoR1); })
 videoR2.addEventListener('play', function() { updateFaceData(videoR2); })
 videoR3.addEventListener('play', function() { updateFaceData(videoR3); })
 
+const text = [
+    'Hasta Luego'
+  ]
+  const anchor = { x: 200, y: 200 }
+  // see DrawTextField below
+  const drawOptions = {
+    anchorPosition: 'TOP_CENTER',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  }
+//   const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
+//   drawBox.draw(document.getElementById('myCanvas'))
+
 function updateFaceData(inputVideo){
-    console.log(inputVideo)
     const canvas = faceapi.createCanvasFromMedia(inputVideo)
     inputVideo.parentNode.appendChild(canvas);
     // document.body.append(canvas)
@@ -167,11 +179,32 @@ function updateFaceData(inputVideo){
     faceapi.matchDimensions(canvas, displaySize)
     setInterval(async () => {
         const detections = await faceapi.detectSingleFace(inputVideo, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks()
-        
-        const resizedDetections = faceapi.resizeResults(detections, displaySize)
+        // console.log(detections)
+        if (detections != undefined){
+            const resizedDetections = faceapi.resizeResults(detections, displaySize)
+            const leftEyeBrow = resizedDetections.landmarks.getLeftEyeBrow()
+            const rightEyeBrow = resizedDetections.landmarks.getRightEyeBrow()
+            const nose = resizedDetections.landmarks.getNose()
+            // console.log(nose)
+            for (var i = 0; i < 5; i++){
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+                anchor["x"] = (leftEyeBrow[i]["x"] + rightEyeBrow[i]["x"]) / 2;
+                anchor["y"]= 1 * (leftEyeBrow[i]["y"] - nose[i]["y"]) + leftEyeBrow[i]["y"];
+                const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
+                drawBox.draw(canvas)
+            } 
+            
+            // faceapi.draw.drawDetections(canvas, resizedDetections)
+            // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+        }
+        else{
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+            anchor["x"] = 15
+            anchor["y"] = 15
+            const drawBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
+            drawBox.draw(canvas)
 
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-        faceapi.draw.drawDetections(canvas, resizedDetections)
-        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+        }
+
     }, 83)
 }
