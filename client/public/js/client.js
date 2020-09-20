@@ -5,7 +5,7 @@ const config = {
     "iceServers": [{ "url": "stun:stun2.1.google.com:19302" }]
 };
 
-var socket = io('ws://localhost:4001');
+var socket = io('https://4af90ae35339.ngrok.io/') //io('ws://localhost:4001');
 const video = document.getElementById('localVideo')
 const videoR = document.getElementById('remoteVideo')
 
