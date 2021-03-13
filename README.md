@@ -1,33 +1,30 @@
-#Witty Lingo
+# Willy Lingo
 
-<h5>Who we are:</h5> 
-<p>
-Teaching virtually holds challenges, but we can often fail to look at the potential benefits of such a learning environment. We aim to highlight this through this web application allowing students to video call each other and practice their foreign language vocab words in a fun video integrated game. Players can see everyone's words except their own and must work collaboratively to work through the words.
-</p>
-
+## Our Mission
+Teaching virtually holds challenges, but we can often fail to look at the potential benefits of online learning. Our goal in this hackathon was to highlight this through a web application that allows students to video call each other. This gives students the ability to practice their foreign language skills in a fun video integrated game based on the popular game "heads up". Players can see everybody's words except their own and must work collaboratively to work through the word set.
 
 ![Alt text](/screenshots/demo1-v1.1.png "Client Web App")
-<p>
-As you could see, everyone except the host(one person appeared twice but under two sockets). Has a word over their head from a wordbank. The objective in this example
-is for students to describe the object and for the student with the object over their head to name it. This game in particular helps with vocab learning. However, as
-we build this platform to be dynammic, it is possible to implament many other games.
-</p>
+As you could see, everyone except the host(one person appeared twice but under two sockets) has a word over their head from the word bank. The objective in this example is for students to describe the object and for the student with the object over their head to name it. This game in particular helps with vocab learning. However, as we build this platform to be dynamic, it is possible to implement many other games.
 
-<p> In an age of online learning where students have limited interaction, this game is great! It allows students to laugh, see eachother, as well as enjoy the 
-language class that they are taking
-<p>
+In an age of online learning where students have limited interaction, this game is great! It allows students to laugh, see and communicate with each other, as well as enjoy the language class that they are taking.
+
+---
+## Runtime Enviornment
+Launched by one member, this portal allows you to see various statuses such as players connected. Likewise, other administrator logistics can be handled via this page.
 
 ![Alt text](/screenshots/demo2.png "Service Admin Portal")
-<p>
-Launched by one member of the teach, this portal allows you to see various status such as players connected. This portal allows launching/restarting games as can be seen. When the `name game` button is pressed, new words will apear on students heads.
 
+ This portal allows launching/restarting games as can be seen. When the `New Game` button is pressed, new words will appear on the heads of the students.
 
-<h5> How to Run and Instasll </h5>
-<p>1. Install node</p>
-<p>2. Install packages using `npm install`</p>
-<p>3. start both node istances</p>
-<p>4. For establishing connections from outside local network, I recommend ngrok to proxy the server/index.js. Then put that url into the `Server URI` input from client and click connect</p>
+---
+## Installation Steps 
+1. Install node on your local system
+2. Install npm packages using `npm install`
+3. Start both node instances by running `node index.js` in both the `/client` and `/server` folders.
+4. Put that url into the `Server URI` input from the client and click connect
+5. (Optional) To establish connections from outside the local network, I recommend ngrok as a proxy for `server/index.js`.
 
-<h5> Sources </h5>
-<p>1. https://gabrieltanner.org/blog/webrtc-video-broadcast (for figuring out WebRTC protocol)</p>
-<p>2. https://github.com/justadudewhohacks/face-api.js/ (for client based computer vision for text attachment to forehead)</p>
+---
+## Sources
+* https://gabrieltanner.org/blog/webrtc-video-broadcast (for figuring out WebRTC protocol)
+* https://github.com/justadudewhohacks/face-api.js/ (for client based computer vision for text attachment to forehead)
