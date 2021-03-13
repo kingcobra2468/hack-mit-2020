@@ -4,9 +4,6 @@ module.exports.num_socket_connections = num_socket_connections;
 
 module.exports.socket_controller = function (socket) {
 
-    //console.log(socket)
-    //socket.join('game-session');
-
     socket.on("broadcaster", () => { // When new node is introduced. Hand shaking to all sockets in room
         console.log(socket.id)
         socket.broadcast.emit("broadcaster", socket.id);
@@ -33,7 +30,7 @@ module.exports.socket_controller = function (socket) {
         socket.to(id).emit("candidate", socket.id, message);
     });
 
-    socket.on('connect', function() { num_socket_connections++; });
+    socket.on('connect', function () { num_socket_connections++; });
 
-    socket.on('disconnect', function() { num_socket_connections--; });
+    socket.on('disconnect', function () { num_socket_connections--; });
 }
