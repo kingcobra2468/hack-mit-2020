@@ -1,4 +1,4 @@
-# Willy Lingo
+# Witty Lingo
 
 ## Our Mission
 Teaching virtually holds challenges, but we can often fail to look at the potential benefits of online learning. Our goal in this hackathon was to highlight this through a web application that allows students to video call each other. This gives students the ability to practice their foreign language skills in a fun video integrated game based on the popular game "heads up". Players can see everybody's words except their own and must work collaboratively to work through the word set.
