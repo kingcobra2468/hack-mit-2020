@@ -6,16 +6,11 @@
     --text-color: #1b1c25;
 }
 
-
 html, body { height: 100vh; padding: 0; margin: 0; 
     background: var(--background) !important;}
 
 .video-mask{
     width: 50%;
-    
-    /* border-radius: 30px;  */
-    /* margin: 10px; */
-    /* display: flex; */
 }
 
 video {
@@ -62,11 +57,6 @@ canvas {
     top: 0;
     left: 0;
     border: none;
-    /* float: left; */
-
-    /* width: 100%; */
-    /* min-width: 100%; */
-    /* height: 50vh !important; */
 }
 
 .row > div {
